@@ -2,12 +2,13 @@ package contract
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-playground/validator"
 	"github.com/rysmaadit/finantier_test/auth_service/common/errors"
 	"github.com/rysmaadit/finantier_test/auth_service/common/util"
 	log "github.com/sirupsen/logrus"
-	"net/http"
 )
 
 type JWTMapClaim struct {
@@ -29,8 +30,8 @@ func NewValidateTokenRequest(r *http.Request) (*ValidateTokenRequestContract, er
 	decoder := json.NewDecoder(r.Body)
 
 	if err := decoder.Decode(validateTokenContract); err != nil {
-		log.Error(err)
-		return nil, err
+		log.Warning(err)
+		return nil, errors.NewBadRequestError(err)
 	}
 
 	validate := validator.New()

@@ -2,17 +2,20 @@ package service
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 	"github.com/rysmaadit/finantier_test/auth_service/common/errors"
 	"github.com/rysmaadit/finantier_test/auth_service/config"
 	"github.com/rysmaadit/finantier_test/auth_service/contract"
+	"github.com/rysmaadit/finantier_test/auth_service/external/jwt_client"
 	log "github.com/sirupsen/logrus"
-	"strconv"
 )
 
 type authService struct {
 	appConfig *config.Config
+	jwtClient jwt_client.JWTClientInterface
 }
 
 type AuthServiceInterface interface {
@@ -20,9 +23,10 @@ type AuthServiceInterface interface {
 	VerifyToken(req *contract.ValidateTokenRequestContract) (*contract.JWTMapClaim, error)
 }
 
-func NewAuthService(appConfig *config.Config) *authService {
+func NewAuthService(appConfig *config.Config, jwtClient jwt_client.JWTClientInterface) *authService {
 	return &authService{
 		appConfig: appConfig,
+		jwtClient: jwtClient,
 	}
 }
 
@@ -31,8 +35,8 @@ func (s *authService) GetToken() (*contract.GetTokenResponseContract, error) {
 		Authorized: true,
 		RequestID:  uuid.New().String(),
 	}
-	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
-	token, err := at.SignedString([]byte(s.appConfig.JWTSecret))
+
+	token, err := s.jwtClient.GenerateTokenStringWithClaims(atClaims, s.appConfig.JWTSecret)
 
 	if err != nil {
 		errMsg := fmt.Sprintf("error signed JWT credentials: %v", err)
@@ -45,17 +49,12 @@ func (s *authService) GetToken() (*contract.GetTokenResponseContract, error) {
 
 func (s *authService) VerifyToken(req *contract.ValidateTokenRequestContract) (*contract.JWTMapClaim, error) {
 	claims := jwt.MapClaims{}
-	token, err := jwt.ParseWithClaims(req.Token, claims, func(token *jwt.Token) (interface{}, error) {
-		return []byte(s.appConfig.JWTSecret), nil
-	})
+
+	err := s.jwtClient.ParseTokenWithClaims(req.Token, claims, s.appConfig.JWTSecret)
 
 	if err != nil {
-		log.Error("error verified token", err)
-		return nil, errors.NewUnauthorizedError("error claim token")
-	}
-
-	if !token.Valid {
-		return nil, errors.NewUnauthorizedError("invalid token")
+		log.Errorln(err)
+		return nil, errors.NewUnauthorizedError("invalid parse token with claims")
 	}
 
 	authorized := fmt.Sprintf("%v", claims["authorized"])
@@ -68,6 +67,7 @@ func (s *authService) VerifyToken(req *contract.ValidateTokenRequestContract) (*
 	ok, err := strconv.ParseBool(authorized)
 
 	if err != nil || !ok {
+		log.Errorln(err)
 		return nil, errors.NewUnauthorizedError("invalid payload")
 	}
 
