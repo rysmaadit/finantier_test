@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  auth-service:
+    build:
+      context: ./auth_service
+      dockerfile: Dockerfile
+    container_name: auth-service
+    restart: always
+    expose:
+      - "80"
+    volumes:
+      - ./auth_service/.env:/app/.env
+
+  encryption-service:
+    build:
+      context: ./encryption_service
+      dockerfile: Dockerfile
+    container_name: encryption-service
+    restart: always
+    expose:
+      - "80"
+    volumes:
+      - ./encryption_service/.env:/app/.env
+
+  stock-service:
+    build:
+      context: ./stock_service
+      dockerfile: Dockerfile
+    container_name: stock-service
+    restart: always
+    ports:
+      - "8000:80"
+    depends_on:
+      - auth-service
+      - encryption-service
+    volumes:
+      - ./stock_service/.env:/app/.env
