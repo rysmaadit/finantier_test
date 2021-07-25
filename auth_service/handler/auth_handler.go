@@ -27,7 +27,7 @@ func ValidateToken(dependencies service.Dependencies) http.HandlerFunc {
 		req, err := contract.NewValidateTokenRequest(r)
 
 		if err != nil {
-			log.Error(err)
+			log.Warning(err)
 			responder.NewHttpResponse(r, w, http.StatusBadRequest, nil, err)
 			return
 		}
