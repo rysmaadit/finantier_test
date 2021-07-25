@@ -2,10 +2,11 @@ package responder
 
 import (
 	"encoding/json"
+	"net/http"
+
 	pkgErrors "github.com/pkg/errors"
 	"github.com/rysmaadit/finantier_test/auth_service/common/errors"
 	"github.com/sirupsen/logrus"
-	"net/http"
 )
 
 type Template struct {
@@ -24,10 +25,6 @@ func NewHttpResponse(r *http.Request, w http.ResponseWriter, httpCode int, resul
 
 func Error(r *http.Request, w http.ResponseWriter, err error, httpCode int) {
 	switch err := pkgErrors.Cause(err).(type) {
-	case *errors.NotFoundError:
-		notFoundError(r, w, err)
-	case *errors.DBError, *errors.ExternalError:
-		serviceUnavailableError(r, w, err)
 	case *errors.BadRequestError:
 		badRequestError(r, w, err)
 	case *errors.UnauthorizedError:
@@ -83,14 +80,6 @@ func GenericError(r *http.Request, w http.ResponseWriter, err error, errorRespon
 	if errorResponse != nil {
 		_ = json.NewEncoder(w).Encode(t)
 	}
-}
-
-func notFoundError(r *http.Request, w http.ResponseWriter, err error) {
-	GenericError(r, w, err, err.Error(), http.StatusNotFound)
-}
-
-func serviceUnavailableError(r *http.Request, w http.ResponseWriter, err error) {
-	GenericError(r, w, err, err.Error(), http.StatusServiceUnavailable)
 }
 
 func badRequestError(r *http.Request, w http.ResponseWriter, err *errors.BadRequestError) {

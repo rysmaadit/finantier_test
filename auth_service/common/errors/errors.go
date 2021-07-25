@@ -6,47 +6,6 @@ import (
 	"strings"
 )
 
-type NotFoundError struct {
-	message string
-}
-
-func (e *NotFoundError) Error() string {
-	return e.message
-}
-
-func NewNotFoundError(err error) *NotFoundError {
-	return &NotFoundError{message: err.Error()}
-}
-
-type DBError struct {
-	message string
-}
-
-func (e *DBError) Error() string {
-	return e.message
-}
-
-func NewDBError(err error, message string) *DBError {
-	return &DBError{message: fmt.Sprintf("%s: %s", message, err.Error())}
-}
-
-func NewDBErrorf(err error, format string, args ...interface{}) *DBError {
-	message := fmt.Sprintf(format, args...)
-	return &DBError{message: fmt.Sprintf("%s: %s", message, err.Error())}
-}
-
-type ConflictError struct {
-	message string
-}
-
-func (e *ConflictError) Error() string {
-	return e.message
-}
-
-func NewConflictErrorf(format string, args ...interface{}) *ConflictError {
-	return &ConflictError{message: fmt.Sprintf(format, args...)}
-}
-
 type BadRequestError struct {
 	message string
 }
@@ -77,10 +36,6 @@ type ExternalError struct {
 
 func (e *ExternalError) Error() string {
 	return e.message
-}
-
-func NewExternalError(format string, args ...interface{}) *ExternalError {
-	return &ExternalError{message: fmt.Sprintf(format, args...)}
 }
 
 type UnauthorizedError struct {

@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/rysmaadit/finantier_test/auth_service/app"
+	"github.com/rysmaadit/finantier_test/auth_service/external/jwt_client"
 )
 
 type Dependencies struct {
@@ -9,7 +10,8 @@ type Dependencies struct {
 }
 
 func InstantiateDependencies(application *app.Application) Dependencies {
-	authService := NewAuthService(application.Config)
+	jwtWrapper := jwt_client.New()
+	authService := NewAuthService(application.Config, jwtWrapper)
 
 	return Dependencies{
 		AuthService: authService,
