@@ -34,6 +34,28 @@ This service will be responsible for:
 
 - Receive `POST` API calls to validate JWT token that used to access the stock service
 
+## How to Run
+
+Run below command to copy `.env` that will be required on each service
+
+```shell
+make setup
+```
+
+Fill all the blank env variables on each service, refer to this doc:
+
+- Auth service refer to this [doc](auth_service/README.md)
+  
+- Encryption service refer to this [doc](auth_service/README.md)
+  
+- Stock service refer to this [doc](auth_service/README.md)
+
+Then run docker
+
+```shell
+docker-compose up
+```
+
 ## Limitation
 
 - Currently, the stock market data API that used in this app is limited to get the stock result per yesterday and there are limitation on API calls per minutes (for free version)
