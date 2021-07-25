@@ -50,11 +50,16 @@ Fill all the blank env variables on each service, refer to this doc:
   
 - Stock service refer to this [doc](auth_service/README.md)
 
-Then run docker
+Then run docker, with below command
 
 ```shell
-docker-compose up
+make build
+make run
 ```
+
+## API Docs
+
+For the API docs, please refer to this [Notion](https://duckduckgo.com) docs.
 
 ## Limitation
 

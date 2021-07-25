@@ -56,24 +56,8 @@ make build
 | APP_PORT | Application port | int | number |
 | LOG_LEVEL | Mode for log level configuration | string | debug/info |
 | ENVIRONMENT | Application environment | string | development |
-| ENCRYPTION_KEY | A key used for encryption | string | alphanumeric |
-
-### Generate Encryption Key
-
-Generate 256 -bit key and use Cipher Block Chaining (CBC)
-
-```shell
-openssl enc -aes-256-cbc -k secret -P -md sha1
-```
-
-You might get this following result
-```text
-salt=1D072B881875XXXX
-key=B2363AC0318F46B00A167B0A715B74F4ABEFD3B651E98AC9E6F20533A5EEXXXX
-iv =000625201358F0B061967760AA99XXXX
-```
-Set `key` as `ENCRYPTION_KEY` value
+| ENCRYPTION_KEY | A key used for encryption, must be 32 characters long | string | alphanumeric |
 
 ## TBA
 
-- Add unit tests
+- Add unit tests on handler
