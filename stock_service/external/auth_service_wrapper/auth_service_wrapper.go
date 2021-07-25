@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/rysmaadit/finantier_test/stock_service/common/errors"
+
 	log "github.com/sirupsen/logrus"
 )
 
@@ -95,6 +97,10 @@ func (asw *authServiceWrapper) ValidateToken(contract *AuthValidateTokenRequestC
 		response := new(AuthValidateTokenResponseContract)
 		err := json.Unmarshal(bodyResBytes, response)
 		return response, err
+	}
+
+	if res.StatusCode == http.StatusUnauthorized {
+		return nil, errors.NewUnauthorizedError("invalid token")
 	}
 
 	log.Error(fmt.Sprintf("error external service, with URL: %s, status_code: %d, response: %v", "", res.StatusCode, string(bodyResBytes)))

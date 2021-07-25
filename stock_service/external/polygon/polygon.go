@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/rysmaadit/finantier_test/stock_service/common/errors"
+
 	log "github.com/sirupsen/logrus"
 )
 
@@ -35,27 +37,31 @@ func (pc *polygonClient) GetDailyTimeSeriesStock(code string) (*GetDailyTimeSeri
 
 	if err != nil {
 		log.Error("error initiate HTTP request call: ", err)
-		return nil, err
+		return nil, errors.NewInternalError(errors.New("internal server error"), "")
 	}
 
 	res, err := pc.HTTPClient.Do(req)
 
 	if err != nil {
 		log.Error("error do HTTP request call: ", err)
-		return nil, err
+		return nil, errors.NewInternalError(errors.New("error call upstream API"), "")
 	}
 
 	bodyBytes, err := ioutil.ReadAll(res.Body)
 
 	if err != nil {
 		log.Error("error read response body: ", err)
-		return nil, err
+		return nil, errors.NewExternalError("error fetch stock data from upstream")
 	}
 
 	if res.StatusCode == http.StatusOK {
 		response := new(GetDailyTimeSeriesStockResponse)
 		err := json.Unmarshal(bodyBytes, response)
 		return response, err
+	}
+
+	if res.StatusCode == http.StatusNotFound {
+		return nil, errors.NewNotFoundError(fmt.Errorf("stock symbol: %s not found", code))
 	}
 
 	log.Error(fmt.Sprintf("error external service, with URL: %s, status_code: %d, response: %v", "", res.StatusCode, string(bodyBytes)))

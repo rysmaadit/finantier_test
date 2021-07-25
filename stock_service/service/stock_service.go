@@ -37,7 +37,7 @@ func (s *stockService) GetEncryptedStockData(request *contract.GetStockByCodeCon
 	if err != nil {
 		errMsg := fmt.Sprintf("error fetch data from external source, message: %s", err.Error())
 		log.Errorf(errMsg)
-		return nil, errors.NewExternalError(errMsg)
+		return nil, err
 	}
 
 	if resp == nil {
