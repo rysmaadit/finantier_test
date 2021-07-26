@@ -59,7 +59,7 @@ make run
 
 ## API Docs
 
-For the API docs, please refer to this [Notion](https://duckduckgo.com) docs.
+For the API docs, please refer to this [Notion](https://www.notion.so/Finantier-Tech-Assessment-API-Docs-2548dd3175ee436b917941f143cea3b5) docs.
 
 ## Limitation
 
